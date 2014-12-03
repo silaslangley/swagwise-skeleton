@@ -5,7 +5,8 @@ var bcrypt = require('bcrypt-nodejs');
 var userSchema = new mongoose.Schema({
     email: { type: String, unique: true },
     password: String,
-    customer_id: String
+    customer_id: String,
+    isAdmin: Boolean
 });
 
 var User = mongoose.model('User', userSchema);

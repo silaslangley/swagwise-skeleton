@@ -20,4 +20,4 @@ var swagSchema = mongoose.Schema({
 });
 
 // Register the Product model and schema with mongoose
-mongoose.model('Swag', swagSchema, 'swag');
+mongoose.model('Product', swagSchema, 'products');

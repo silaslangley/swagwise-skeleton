@@ -7,7 +7,7 @@
 
         return {
 
-            swag: $resource('/api/swag/:id'),
+            swag: $resource('/api/products/:id'),
 
             checkout: $resource('/api/checkout'),
 

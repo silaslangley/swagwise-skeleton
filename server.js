@@ -16,6 +16,7 @@ var express      = require('express'),
     http         = require('http'),
     https        = require('https');
 
+
 /* ===================== CONFIGURATION ==================== */
 
 var app = express();
@@ -62,7 +63,8 @@ var mongodbUri = 'mongodb://swagwise:geekwise@ds045679.mongolab.com:45679/geekwi
 var mongooseUri = uriUtil.formatMongoose(mongodbUri);
 var conn = mongoose.connection;
 
-mongoose.connect(mongooseUri, options);
+mongoose.connect('mongodb://localhost:27017/swagwise');
+
 conn.on('error', console.error.bind(console, 'connection error:'));
 conn.once('open', function() {
     // Wait for the database connection to establish, then start the app.
@@ -86,7 +88,10 @@ app.use(bodyParser.json());                             		        // have the ab
 app.use(bodyParser.urlencoded());                       		        // have the ability to simulate DELETE and PUT
 app.use(cookieParser());                                		        // have the ability to parse cookies
 app.use(express.static(path.join(__dirname, 'app')));		            // set the static files location
-app.use(session({ secret: 'blackwidow straw' }));                       // Encryption key/salt
+app.use(session({ 
+    secret: 'blackwidow straw',
+    saveUninitialized: true,
+    resave: true }));                       // Encryption key/salt
 app.use(passport.initialize());                                         // Initializes passport
 app.use(passport.session());
 app.use(function(req, res, next) {
@@ -134,6 +139,8 @@ passport.use(new LocalStrategy({ usernameField: 'email' }, function(email, passw
 }));
 
 /* ======================== ROUTES ========================= */
+
+require('./admin-routes.js')(app);
 require('./routes.js')(app);
 
 exports = module.exports = app;                                         // expose app
