@@ -1,0 +1,45 @@
+<div class="jumbotron">
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12 col-lg-12">
+				<h1 class="h1">
+					Admin <small>Manage Products</small></h1>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>Title</th>
+						<th>Price</th>
+						<th>Special Price</th>
+						<th>Manufacturer</th>
+						<th>Inventory</th>
+						<th>Active</th>
+						<th>Featured</th>
+						<th>Description</th>
+						<th>Tags</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="product in products">
+						<td>{{product.title}}</td>
+						<td>{{product.price}}</td>
+						<td>{{product.specialPrice}}</td>
+						<td>{{product.manufacturer}}</td>
+						<td>{{product.inventory}}</td>
+						<td>{{product.isActive}}</td>
+						<td>{{product.isFeatured}}</td>
+						<td>{{product.description}}</td>
+						<td>{{product.tags}}</td>
+					</tr>
+				</tbody>		
+			</table>
+		</div>
+	</div>
+</div>

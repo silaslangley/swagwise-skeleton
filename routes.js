@@ -9,11 +9,13 @@ module.exports = function(app) {
     /* Add the dependency to Stripe */
     var stripe   = require('stripe')('sk_test_MPZw5Of5EjrfHaAM789HgPUc');
 
+    var router = require('express').Router();
+
     /* ======================= REST ROUTES ====================== */
     // Handle API calls
 
     // Swag API route
-    app.route('/api/products')
+    router.route('/products')
         .get(function(req, res) {
 
             var filter = {
@@ -26,8 +28,6 @@ module.exports = function(app) {
 
             // use mongoose to get all products in the database
             mongoose.model('Product').find(filter, function(err, swag) { //anything on the query string, express will turn into a query string object as two lines below
-                
-
 
                 //http://localhost:9001/api/swag/?isFeatured=true&foo=bar&ninja=false
                 // req.query = {isFeatured: true, foo: bar, ninja: false}
@@ -40,7 +40,7 @@ module.exports = function(app) {
             });
         });
 
-    app.route('/api/products/:id')
+    router.route('/products/:id')
         .get(function(req, res) {
             // use mongoose to get a product in the database by id
             mongoose.model('Product').findOne({id: req.params.id}, function(err, product) {
@@ -61,53 +61,56 @@ module.exports = function(app) {
             });
         });
 
-
-
     /* Add the following routes after the products routes */
     // logout API route
-    app.get('/api/logout', function(req, res, next) {
-        req.logout();
-        res.send(200);
-    });
+    router.route('/logout')
+        .get(function(req, res, next) {
+            req.logout();
+            res.send(200);
+        });
 
     // login API route
-    app.post('/api/login', passport.authenticate('local'), function(req, res) {
-        res.cookie('user', JSON.stringify(req.user));
-        res.send(req.user);
-    });
+    router.route('/login')
+        .post(passport.authenticate('local'), function(req, res) {
+            if (req.isAuthenticated()) {
+                res.cookie('user', JSON.stringify(req.user));
+                res.send(req.user);
+            }
+        });
 
     // signup API route
-    app.post('/api/register', function(req, res, next) {
-        var User = mongoose.model('User');
-        var email = req.body.email;
+    router.route('/register')
+        .post(function(req, res, next) {
+            var User = mongoose.model('User');
+            var email = req.body.email;
 
-        // Create a customer
-        stripe.customers.create({
+            // Create a customer
+            stripe.customers.create({
 
-            email: email
+                email: email
 
-        }, function(err, customer){
+            }, function(err, customer){
 
-            if(err) return next(err);
+                if(err) return next(err);
 
-            var user = new User({
-                email: email,
-                password: req.body.password,
-                customer_id: customer.id
+                var user = new User({
+                    email: email,
+                    password: req.body.password,
+                    customer_id: customer.id
+                });
+
+                user.save(function(err) {
+                    if (err) return next(err);
+
+                    res.send(200);
+                });
+
             });
-
-            user.save(function(err) {
-                if (err) return next(err);
-
-                res.send(200);
-            });
-
         });
-    });
 
     /* ========================= CHECK OUT ROUTES ======================= */
 
-    app.route('/api/checkout')
+    router.route('/checkout')
         .post(function(req, res, next) {
 
             var charge = {
@@ -135,8 +138,11 @@ module.exports = function(app) {
 
     /* ========================= FRONT-END ROUTES ======================= */
     // route to handle all angular requests
+
+    app.use('/api', router);
+
     app.route('*')
-        .all(function(req, res) {
+       .all(function(req, res) {
         res.sendfile('./app/index.html'); // load our public/index.html file
     });
 

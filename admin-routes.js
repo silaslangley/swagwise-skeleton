@@ -9,9 +9,17 @@ module.exports = function(app) {
     /* Add the dependency to Stripe */
     var stripe   = require('stripe')('sk_test_MPZw5Of5EjrfHaAM789HgPUc');
 
+    // Create a new instance of the Express 4 router
+
+    var router = require('express').Router();
+
+    var User = mongoose.model('User');
+
+    var Product = mongoose.model('Product');
+
     /* ======================= MIDDLEWARE ====================== */
 
-    app.use('/api/admin', passport.authenticate('local'), function(req, res) {
+    /**app.use('/api/admin', passport.authenticate('local'), function(req, res) {
 
         console.log('the request %j', req);
         
@@ -24,15 +32,28 @@ module.exports = function(app) {
             });
         }
 
-    });
+    }); **/
+
+    function checkRole(role) {
+        return function(req, res, next) {
+             //if (req.user.isAdmin == true
+            if (req.user && req.user[role]) {
+                next();
+            } else {
+                res.send(401, "Unauthorized");
+            }
+        }
+    }
 
     /* ======================= REST ROUTES ====================== */
     // Handle API calls
 
-    // Swag API route
-    app.route('/api/admin/products')
-        .get(function(req, res) {
+    router.route('/*')
+        .all(checkRole('isAdmin'));
 
+    // Products API route
+    router.route('/products')
+        .get(function(req, res) {
             var filter = {
                 isActive: true
             };
@@ -42,8 +63,7 @@ module.exports = function(app) {
             }
 
             // use mongoose to get all products in the database
-            mongoose.model('Product').find(filter, function(err, swag) { //anything on the query string, express will turn into a query string object as two lines below
-                
+            Product.find(filter, function(err, swag) { //anything on the query string, express will turn into a query string object as two lines below
 
                 //http://localhost:9001/api/swag/?isFeatured=true&foo=bar&ninja=false
                 // req.query = {isFeatured: true, foo: bar, ninja: false}
@@ -54,66 +74,152 @@ module.exports = function(app) {
 
                 res.send(swag); // return products in JSON format
             });
+        })
+        .post(function(req, res) {
+
+            Product.create(req.body, function(err, user) {
+
+                if(err) res.send(err);
+
+                res.send(user);
+            });
+
         });
 
-    app.route('/api/admin/products/:id')
+    router.route('/products/:id')
         .get(function(req, res) {
             // use mongoose to get a product in the database by id
-            mongoose.model('Product').findOne({id: req.params.id}, function(err, product) {
+            Product.findOne({id: req.params.id}, function(err, product) {
                 // if there is an error retrieving, send the error. nothing after res.send(err) will execute
                 if (err)
                     res.send(err);
 
                 res.send(product); // return the product in JSON format
             });
-        });
+        })
 
+        .post(function(req, res) {
 
+            Product.findByIdAndUpdate(req.params.id, req.body, function(err, user) {
+                if(err) res.send(err);
 
-    /* Add the following routes after the products routes */
-    // logout API route
-    app.get('/api/logout', function(req, res, next) {
-        req.logout();
-        res.send(200);
-    });
-
-    // login API route
-    app.post('/api/login', passport.authenticate('local'), function(req, res) {
-        res.cookie('user', JSON.stringify(req.user));
-        res.send(req.user);
-    });
-
-    // signup API route
-    app.post('/api/register', function(req, res, next) {
-        var User = mongoose.model('User');
-        var email = req.body.email;
-
-        // Create a customer
-        stripe.customers.create({
-
-            email: email
-
-        }, function(err, customer){
-
-            if(err) return next(err);
-
-            var user = new User({
-                email: email,
-                password: req.body.password,
-                customer_id: customer.id
+                res.send(user);
             });
+        })
 
-            user.save(function(err) {
-                if (err) return next(err);
+                
+        .delete(function(req, res) {
 
-                res.send(200);
+            Product.findByIdAndRemove(req.params.id, function(err, response) {
+                if(err) res.send(err);
+
+                res.send(response);
             });
 
         });
-    });
 
-    app.route('/api/admin/users');
 
-    app.route('api/admin/users/:id');
+    router.route('/users')
+        .get(function(req, res) {
+        
+
+            User.find(req.query, function(err, users) {
+                
+                if (err) res.send(err);
+
+                res.send(users);
+            });
+        })
+        .post(function(req, res) {
+
+            /* var user = new User(req.body);
+
+            user.save(function(err, user) {
+
+                if(err) res.send(err);
+
+                res.send(user);
+            }); */
+
+
+            User.create(req.body, function(err, user) {
+
+                if(err) res.send(err);
+
+                res.send(user);
+            });
+
+        });
+
+    router.route('/users/:id')
+        .get(function(req, res) {
+
+            User.findOne({_id: req.params.id}, function(err, user) {
+                if (err) {res.send(err)};
+
+                res.send(user);
+            });
+        })
+        .post(function(req, res) {
+           /* User.findOne({_id: req.params.id}, function(err, user) {
+
+                if (err) res.send(err);
+
+               
+                if (req.body.firstName) {
+                    user.firstName = req.body.firstName;
+                };
+
+                if (req.body.lastName) {
+                    user.lastName = req.body.lastName;
+                };
+
+                if (req.body.email) {
+                    user.email = req.body.email;
+                };
+
+                if (typeof req.body.isActive === 'boolean') {
+                    user.isActive = req.body.isActive;
+                };
+
+                if (typeof req.body.isAdmin === 'boolean') {
+                    user.isAdmin = req.body.isAdmin;
+                };
+
+                user.save(function(err, user) {
+                    if(err) res.send(err);
+
+                    res.send(user);
+
+                }) */
+
+            User.findByIdAndUpdate(req.params.id, req.body, function(err, user) {
+                if(err) res.send(err);
+
+                res.send(user);
+            });
+        })
+              
+        .delete(function(req, res) {
+
+            /* User.findOne({id: req.params.id}, function(err, user) {
+                        if(err) res.send(err);
+
+                        user.remove(function(err, response ) {
+                            if (err) res.send(err);
+
+                            res.send(response);
+                        });
+                    }); */
+
+            User.findByIdAndRemove(req.params.id, function(err, response) {
+                if(err) res.send(err);
+
+                res.send(response);
+            });
+
+        });
+
+    app.use('/api/admin', router);
   
 };

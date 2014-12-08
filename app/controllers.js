@@ -237,4 +237,16 @@
         CartService.emptyCart();
     });
 
+    app.controller('UsersController', function($scope, API) {
+        
+        $scope.users = API.user.query();
+
+    });
+
+    app.controller('ProductsController', function($scope, API) {
+
+        $scope.products = API.product.query();
+
+    });
+
 })(window.angular);
