@@ -7,6 +7,10 @@ body {
     width: 30%;
 }
 
+.deleteColor {
+    background-color: #F00 !important;
+}
+
 @media (max-width: 970px) {
     .navbar-header {
         height: 100px;

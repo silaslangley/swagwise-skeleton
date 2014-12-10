@@ -106,8 +106,7 @@ module.exports = function(app) {
                 res.send(product);
             });
         })
-
-                
+               
         .delete(function(req, res) {
 
             Product.findByIdAndRemove(req.params.id, function(err, response) {

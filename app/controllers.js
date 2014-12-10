@@ -267,6 +267,17 @@
                 isActive: $scope.user.isActive
             }, updateSuccess);
         };
+
+        $scope.delete = function() {
+            $scope.user.$delete({
+                id: $scope.user._id,
+                firstName: $scope.user.firstName,
+                lastName: $scope.user.lastName,
+                email: $scope.user.email,
+                isAdmin: $scope.user.isAdmin,
+                isActive: $scope.user.isActive
+            });
+        };
     });
 
     app.controller('ProductsController', function($scope, API) {
