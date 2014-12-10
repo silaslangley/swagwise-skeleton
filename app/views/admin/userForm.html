@@ -1,0 +1,69 @@
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <div class="center-form panel">
+            <div class="panel-body">
+                <h2 class="text-center">Update Users</h2>
+
+                <div class="alert alert-{{alert.type}}">{{alert.message}}</div>
+
+                <form method="post" ng-submit="save()" name="userForm">
+
+                    <div class="form-group">
+                        <input type="text" name="firstName" class="form-control input-lg" ng-model = "user.firstName" required autofocus>
+                    </div>
+
+                    <div class="help-block text-danger" ng-if="userForm.firstName.$dirty"
+                         ng-messages="userForm.firstName.$error">
+                        <div ng-message="required">Your first name is required.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" name="lastName" class="form-control input-lg" ng-model = "user.lastName" required>
+                    </div>
+
+                    <div class="help-block text-danger" ng-if="userForm.lastName.$dirty"
+                         ng-messages="usersForm.lastName.$error">
+                        <div ng-message="required">Your last name is required.</div>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="email" name="email" class="form-control input-lg"
+                               ng-model = "user.email"   required autofocus>
+
+                    </div>
+
+                    <div class="help-block text-danger" ng-if="userForm.email.$dirty"
+                         ng-messages="userForm.email.$error">
+                        <div ng-message="required">Your email address is required.</div>
+                        <div ng-message="email">Your email address is invalid.</div>
+                    </div>
+
+
+                    <div class="form-group">
+                        Active?<input type="checkbox" label="Active" name="isActive" ng-model="user.isActive" class="form-control input-lg" ng-checked = "{{user.isActive}}">
+                    </div>
+
+                    <div class="help-block text-danger"
+                         ng-if="userForm.isActive.$dirty"
+                         ng-messages="userForm.isActive.$error">
+                        <div ng-message="required">This field is required.</div>
+                    </div>
+
+                    <div class="form-group">
+                        Admin?<input type="checkbox" label="Admin" name="isAdmin" ng-model="user.isAdmin" class="form-control input-lg" ng-checked = "{{user.isAdmin}}">
+                    </div>
+
+                    <div class="help-block text-danger"
+                         ng-if="userForm.isAdmin.$dirty"
+                         ng-messages="userForm.isAdmin.$error">
+                        <div ng-message="required">This field is required.</div>
+                    </div>
+
+                    <button type="submit" ng-disable="userForm.$invalid" class="btn btn-lg btn-block btn-success">
+                        Update
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -63,7 +63,7 @@ module.exports = function(app) {
             }
 
             // use mongoose to get all products in the database
-            Product.find(filter, function(err, swag) { //anything on the query string, express will turn into a query string object as two lines below
+            Product.find(filter, function(err, products) { //anything on the query string, express will turn into a query string object as two lines below
 
                 //http://localhost:9001/api/swag/?isFeatured=true&foo=bar&ninja=false
                 // req.query = {isFeatured: true, foo: bar, ninja: false}
@@ -72,16 +72,16 @@ module.exports = function(app) {
                 if (err)
                     res.send(err);
 
-                res.send(swag); // return products in JSON format
+                res.send(products); // return products in JSON format
             });
         })
         .post(function(req, res) {
 
-            Product.create(req.body, function(err, user) {
+            Product.create(req.body, function(err, product) {
 
                 if(err) res.send(err);
 
-                res.send(user);
+                res.send(product);
             });
 
         });
@@ -100,10 +100,10 @@ module.exports = function(app) {
 
         .post(function(req, res) {
 
-            Product.findByIdAndUpdate(req.params.id, req.body, function(err, user) {
+            Product.findByIdAndUpdate(req.params.id, req.body, function(err, product) {
                 if(err) res.send(err);
 
-                res.send(user);
+                res.send(product);
             });
         })
 

@@ -62,6 +62,11 @@
                 controller: 'UsersController',
                 templateUrl: 'views/admin/users.html'
             })
+            .state('editusers', {
+                url: '/users/:id',
+                controller: 'UserFormController',
+                templateUrl: 'views/admin/userForm.html'
+            })
             .state('products', {
                 url: '/products',
                 controller: 'ProductsController',

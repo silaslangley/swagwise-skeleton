@@ -14,7 +14,7 @@ module.exports = function(app) {
     /* ======================= REST ROUTES ====================== */
     // Handle API calls
 
-    // Swag API route
+    // Product API route
     router.route('/products')
         .get(function(req, res) {
 
@@ -27,7 +27,7 @@ module.exports = function(app) {
             }
 
             // use mongoose to get all products in the database
-            mongoose.model('Product').find(filter, function(err, swag) { //anything on the query string, express will turn into a query string object as two lines below
+            mongoose.model('Product').find(filter, function(err, products) { //anything on the query string, express will turn into a query string object as two lines below
 
                 //http://localhost:9001/api/swag/?isFeatured=true&foo=bar&ninja=false
                 // req.query = {isFeatured: true, foo: bar, ninja: false}
@@ -36,7 +36,7 @@ module.exports = function(app) {
                 if (err)
                     res.send(err);
 
-                res.send(swag); // return products in JSON format
+                res.send(products); // return products in JSON format
             });
         });
 
